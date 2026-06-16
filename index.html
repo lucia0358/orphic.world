@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JPM</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="stage">
+    <section class="poem-page" aria-label="시 본문">
+      <div class="poem-text">
+        우린 어째서 <span class="word" data-sound="forget">망각</span>해야 합니까?
+        긴 <span class="word" data-sound="time">시간</span> 너머 내 파편을 두고 왔는데,
+        언젠가 삶이 지치고 고되어
+        날카로운 말과 <span class="word" data-sound="burden">무거운 책임</span>이란 이름에
+        한 줌 피 흘린 날,
+        헤진 가슴 한구석 <span class="word" data-sound="empty">빈자리</span>에 꿰메어 액자에 걸면
+        나는 그 이상 바라지 않았는데
+
+        <span class="word" data-sound="memory">추억</span>은 어째서 <span class="word" data-sound="fade">빛바래야</span> 합니까?
+        내가 온전히 취하기엔
+        과분하리만치 새콤한 <span class="word" data-sound="recall">기억</span>만 고이 모아
+        흐르는 시간 넘어 붉은빛 파편을 두고 왔는데,
+        사무실 형광등과 퇴근길 가로등에 눈멀어버린 날
+        보이지 않는 피 뚝 뚝 흘리며 <span class="word" data-sound="grapefruit">붉은 자몽</span> 빛 추억 찾았는데
+        마치 <span class="word" data-sound="apple">한여름 그을린 사과</span>처럼 상하고 부식되어
+        더 이상 그 빛깔 온데간데없다면
+        나는 이제 무엇으로 눈 뜨고 지혈하란 말입니까?
+
+        내 조그마한 추억 한 움큼,
+        가슴 한구석 듬성듬성 얽매인 사진 한 점
+        그것이 나 세상 살아가게 하는
+        내 <span class="word" data-sound="world">세상</span> 전부와도 같았는데
+      </div>
+    </section>
+    <button id="navTrigger" class="nav-trigger" type="button" aria-label="네비게이션 열기">
+      009
+    </button>
+    <img
+      id="infoImage"
+      class="info-image"
+      src="img/nav.png"
+      alt="네비게이션"
+    />
+     <!-- LP 재생 버튼 -->
+    <div class="tonearm-control" id="playBtn">
+      <span id="playIcon">▶</span>
+    </div>
+
+    <!-- 음악 -->
+    <audio id="bgm" loop>
+      <source src="music.mp3" type="audio/mpeg">
+    </audio>
+    <!-- 영상 -->
+    <video id="popupVideo" class="video-popup" muted controls>
+      <source src="video/world.mov" type="video/mp4">
+    </video>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>  

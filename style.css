@@ -1,0 +1,218 @@
+@import url("https://fonts.googleapis.com/css2?family=Prosto+One&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  font-family: "Prosto One", "Noto Sans KR", sans-serif;
+}
+
+/* 메인 */
+.stage {
+  position: relative;
+  width: 1000px;
+  height: 720px;
+  background: url("img/Mainn.png") center center / cover no-repeat;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+/* 스크린 요동 */
+@keyframes wobble {
+  0%   { transform: skewX(0deg); }
+  25%  { transform: skewX(1deg); }
+  50%  { transform: skewX(-1deg); }
+  75%  { transform: skewX(0.5deg); }
+  100% { transform: skewX(0deg); }
+}
+
+.screen {
+  animation: wobble 2s infinite ease-in-out;
+}
+
+/* 시 */
+.poem-page {
+  position: absolute;
+  left: 83px;
+  top: 170px;
+  width: 368px;
+  display: flex;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.poem-text {
+  width: 272px;
+  text-align: center;
+  white-space: pre-line;
+  color: #1b1b1b;
+  font-size: 11.5px;
+  line-height: 19px;
+  letter-spacing: -0.05em;
+  pointer-events: auto;
+}
+
+/* 클릭 단어 */
+.word {
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.08s ease, text-shadow 0.2s ease;
+}
+
+.word:hover {
+  color: #c74d4d;
+}
+
+.word:active {
+  transform: scale(0.92);
+}
+
+.word.playing {
+  color: #c74d4d;
+  text-shadow: 0 0 6px rgba(199, 77, 77, 0.35);
+}
+
+/* 009 버튼 */
+.nav-trigger {
+  position: absolute;
+  right: 55px;
+  bottom: 66px;
+  border: 0;
+  background: transparent;
+  color: #1f1f1f;
+  font-size: 8.3px;
+  line-height: 8;
+  cursor: pointer;
+  z-index: 20;
+  font-family: "Prosto One", sans-serif;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-trigger:hover {
+  color: #c74d4d;
+  transform: scale(1.08);
+}
+
+/* 플레이버튼 */
+.tonearm-control {
+  position: absolute;
+
+  /* 위치는 직접 맞춰줘 */
+  top: 122px;
+  right: 148px;
+
+  width: 56px;
+  height: 56px;
+
+  border: 2px solid #111;
+  border-radius: 50%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: #f5f5f5;
+
+  cursor: pointer;
+  transition: transform .2s ease;
+}
+
+.tonearm-control:hover {
+  transform: scale(1.08);
+}
+
+#playIcon {
+  font-size: 16px;
+  user-select: none;
+  margin-left: 2px; /* ▶가 가운데처럼 보이게 */
+}
+
+/* 영상 */
+.video-popup {
+  position: absolute;
+  top: 120px;
+  right: 90px;
+
+  width: 350px;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+
+  z-index: 30;
+}
+
+.video-popup.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 네비 */
+.info-image {
+  position: absolute;
+  top: 62px;
+  right: -52px;
+  width: 312px;
+  height: 594px;
+  z-index: 25;
+  object-fit: contain;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.7s ease;
+}
+
+.info-image.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ===== 모바일 ===== */
+@media (max-width: 700px) {
+  .stage {
+    width: min(100vw, calc(100vh * 1.6666667));
+    aspect-ratio: 1200 / 720;
+    height: auto;
+  }
+
+  .poem-page {
+    left: 29%;
+    top: 51px;
+    transform: translateX(-50%);
+    width: 80vw;
+  }
+
+  .poem-text {
+    width: 100%;
+    font-size: 4.2px;
+    line-height: 6.3px;
+  }
+
+  .nav-trigger {
+    right: 50px;
+    bottom: 31px;
+    font-size: 2.5px;
+    line-height: 1;
+  }
+
+  .info-image {
+    top: 19.5px;
+    right: 27.5px;
+    width: 80px;
+    height: 186.19px;
+  }
+}
