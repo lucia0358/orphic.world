@@ -136,14 +136,14 @@ body {
 /* 영상 */
 .video-popup {
   position: absolute;
-  top: 320px;
-  right: 140px;
+  top: 175px;
+  right: 105px;
 
   width: 300px;
 
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.8s ease;
 
   z-index: 999;
   background: black;
