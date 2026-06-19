@@ -155,23 +155,3 @@ document.addEventListener("click", () => {
   infoImage.classList.remove("show");
 });
 
-/* LP 재생 버튼 */
-const btn = document.getElementById("playBtn");
-const icon = document.getElementById("playIcon");
-const audio = document.getElementById("bgm");
-
-let playing = false;
-
-btn.addEventListener("click", () => {
-  if (!playing) {
-    audio.play().catch((error) => {
-      console.error("BGM 재생 실패:", error);
-    });
-    icon.textContent = "❚❚";
-  } else {
-    audio.pause();
-    icon.textContent = "▶";
-  }
-
-  playing = !playing;
-});
