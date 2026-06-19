@@ -141,12 +141,17 @@ body {
 
   width: 300px;
 
-  opacity: 1;
-  pointer-events: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
 
   z-index: 999;
-  border: 3px solid red;
   background: black;
+}
+
+.video-popup.show {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* 네비 */
