@@ -1,38 +1,47 @@
 const soundMap = {
-  forget: "music/oblivion.mp3",
-  time: "music/time.mp3",
-  burden: "music/무거운책임.mp3",
-  empty: "music/빈자리.mp3",
-  memory: "music/memory.mp3",
-  fade: "music/빛바래야.mp3",
-  recall: "music/remember.mp3",
-  grapefruit: "music/red.mp3",
-  apple: "music/summer.mp3",
+  Bass: "music/Bass.mp3",
+  Drum 1: "music/Drum 1.mp3",
+  Drum 2: "music/Drum 2.mp3",
+  Guitar: "music/Guitar.mp3",
+  Lead: "music/Lead.mp3",
+  Pad: "music/Pad.mp3",
+  Piano+FX: "music/Piano+FX.mp3",
 };
+
+const stems = {};
+
+Object.entries(stemMap).forEach(([key, src]) => {
+  const audio = new Audio(src);
+  audio.preload = "auto";
+
+  // 전체 길이 스템을 끝나면 다시 반복하고 싶으면 true
+  // 한 번만 2분 이상 재생하고 끝내고 싶으면 false
+  audio.loop = true;
+
+  audio.volume = 0;
+  stems[key] = audio;
+});
+
+let stemsStarted = false;
+const activeStems = new Set();
+
 
 let currentAudio = null;
 let currentWord = null;
 
 const popupVideo = document.getElementById("popupVideo");
 
-/* 사운드 재생 */
-function playSound(key, clickedWord) {
+/* 스템 재생 */
+async function playSound(key, clickedWord) {
   console.log("clicked:", key);
 
-  if (currentWord) {
+  // 기존 단어 색상 처리
+  if (currentWord && !activeStems.has(currentWord.dataset.sound)) {
     currentWord.classList.remove("playing");
   }
 
-  currentWord = clickedWord;
-  currentWord.classList.add("playing");
-
   // 세상 클릭 시 영상만 표시
   if (key === "world") {
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
-    }
-
     popupVideo.classList.add("show");
     popupVideo.currentTime = 0;
 
@@ -40,6 +49,7 @@ function playSound(key, clickedWord) {
       console.error("영상 재생 실패:", error);
     });
 
+    clickedWord.classList.add("playing");
     return;
   }
 
@@ -48,26 +58,35 @@ function playSound(key, clickedWord) {
   popupVideo.currentTime = 0;
   popupVideo.classList.remove("show");
 
-  const src = soundMap[key];
-  if (!src) return;
+  const stem = stems[key];
+  if (!stem) return;
 
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
+  // 첫 클릭 때 모든 스템을 0초부터 동시에 조용히 시작
+  if (!stemsStarted) {
+    Object.values(stems).forEach((audio) => {
+      audio.currentTime = 0;
+      audio.volume = 0;
+    });
+
+    await Promise.allSettled(
+      Object.values(stems).map((audio) => audio.play())
+    );
+
+    stemsStarted = true;
   }
 
-  currentAudio = new Audio(src);
+  // 이미 켜져 있으면 끄기
+  if (activeStems.has(key)) {
+    stem.volume = 0;
+    activeStems.delete(key);
+    clickedWord.classList.remove("playing");
+    return;
+  }
 
-  currentAudio.play().catch((error) => {
-    console.error("오디오 재생 실패:", error);
-  });
-
-  currentAudio.addEventListener("ended", () => {
-    if (currentWord) {
-      currentWord.classList.remove("playing");
-      currentWord = null;
-    }
-  });
+  // 꺼져 있으면 켜기
+  stem.volume = 1;
+  activeStems.add(key);
+  clickedWord.classList.add("playing");
 }
   
 
