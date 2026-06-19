@@ -35,11 +35,6 @@ const popupVideo = document.getElementById("popupVideo");
 async function playSound(key, clickedWord) {
   console.log("clicked:", key);
 
-  // 기존 단어 색상 처리
-  if (currentWord && !activeStems.has(currentWord.dataset.sound)) {
-    currentWord.classList.remove("playing");
-  }
-
   // 세상 클릭 시 영상만 표시
   if (key === "world") {
     popupVideo.classList.add("show");
@@ -59,7 +54,11 @@ async function playSound(key, clickedWord) {
   popupVideo.classList.remove("show");
 
   const stem = stems[key];
-  if (!stem) return;
+
+  if (!stem) {
+    console.error("해당 스템 없음:", key);
+    return;
+  }
 
   // 첫 클릭 때 모든 스템을 0초부터 동시에 조용히 시작
   if (!stemsStarted) {
@@ -69,7 +68,11 @@ async function playSound(key, clickedWord) {
     });
 
     await Promise.allSettled(
-      Object.values(stems).map((audio) => audio.play())
+      Object.entries(stems).map(([stemKey, audio]) =>
+        audio.play().catch((error) => {
+          console.error(`${stemKey} 재생 실패:`, error);
+        })
+      )
     );
 
     stemsStarted = true;
