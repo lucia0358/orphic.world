@@ -25,22 +25,28 @@ async function loadStems() {
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
   for (const [key, src] of Object.entries(stemMap)) {
-    const response = await fetch(src);
+    try {
+      const response = await fetch(src + "?v=6");
 
-    if (!response.ok) {
-      console.error("스템 파일 로드 실패:", key, src);
-      continue;
+      if (!response.ok) {
+        console.error("스템 파일 로드 실패:", key, src);
+        continue;
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+      const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+      const gainNode = audioCtx.createGain();
+      gainNode.gain.value = 0;
+      gainNode.connect(audioCtx.destination);
+
+      stemBuffers[key] = audioBuffer;
+      stemGains[key] = gainNode;
+
+      console.log("스템 로드 성공:", key);
+    } catch (error) {
+      console.error("스템 디코딩 실패:", key, src, error);
     }
-
-    const arrayBuffer = await response.arrayBuffer();
-    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-
-    const gainNode = audioCtx.createGain();
-    gainNode.gain.value = 0;
-    gainNode.connect(audioCtx.destination);
-
-    stemBuffers[key] = audioBuffer;
-    stemGains[key] = gainNode;
   }
 
   stemsLoaded = true;
@@ -59,11 +65,12 @@ async function startAllStems() {
   const startAt = audioCtx.currentTime + 0.1;
 
   for (const [key, buffer] of Object.entries(stemBuffers)) {
+    if (!stemGains[key]) continue;
+
     const source = audioCtx.createBufferSource();
     source.buffer = buffer;
 
-    // 전체 곡을 반복하려면 true
-    // 한 번만 재생하려면 false
+    // 전체 곡 반복
     source.loop = true;
 
     source.connect(stemGains[key]);
