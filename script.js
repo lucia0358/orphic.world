@@ -130,16 +130,16 @@ async function playSound(key, clickedWord) {
   }
 
   // 기준 시간에 맞춰서 켜기
-  stem.currentTime = loopClock.currentTime;
-  stem.volume = 1;
+const syncTime = stem.duration
+  ? loopClock.currentTime % stem.duration
+  : loopClock.currentTime;
 
-  stem.play().catch((error) => {
-    console.error("스템 재생 실패:", key, error);
-  });
+stem.currentTime = syncTime;
+stem.volume = 1;
 
-  activeStems.add(key);
-  clickedWord.classList.add("playing");
-
+stem.play().catch((error) => {
+  console.error("스템 재생 실패:", key, error);
+});
   syncActiveStems();
 }
 
