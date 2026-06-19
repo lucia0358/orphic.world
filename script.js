@@ -8,89 +8,72 @@ const stemMap = {
   Lead: "music/Lead.mp3",
 };
 
-let audioCtx = null;
-let stemsLoaded = false;
-let stemsStarted = false;
-
-const stemBuffers = {};
-const stemGains = {};
-const activeStems = new Set();
+const popupVideo = document.getElementById("popupVideo");
 
 let currentWord = null;
 
-const popupVideo = document.getElementById("popupVideo");
+/* 기준 시간용 오디오 */
+const loopClock = new Audio("music/Bass.mp3");
+loopClock.loop = true;
+loopClock.preload = "auto";
+loopClock.volume = 0;
 
-/* 스템 파일 미리 불러오기 */
-async function loadStems() {
-  if (stemsLoaded) return;
+const stems = {};
+const activeStems = new Set();
 
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+Object.entries(stemMap).forEach(([key, src]) => {
+  const audio = new Audio(src);
+  audio.loop = true;
+  audio.preload = "auto";
+  audio.volume = 0;
+  stems[key] = audio;
+});
 
-  for (const [key, src] of Object.entries(stemMap)) {
-    try {
-      const response = await fetch(src + "?v=4");
+let clockStarted = false;
 
-      if (!response.ok) {
-        console.error("스템 파일 로드 실패:", key, src);
-        continue;
-      }
+/* 기준 오디오 시작 */
+async function startClock() {
+  if (clockStarted) return;
 
-      const arrayBuffer = await response.arrayBuffer();
-      const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+  loopClock.currentTime = 0;
 
-      const gainNode = audioCtx.createGain();
-      gainNode.gain.value = 0;
-      gainNode.connect(audioCtx.destination);
+  try {
+    await loopClock.play();
+    clockStarted = true;
+    console.log("루프 기준 시작");
+  } catch (error) {
+    console.error("루프 기준 재생 실패:", error);
+  }
+}
 
-      stemBuffers[key] = audioBuffer;
-      stemGains[key] = gainNode;
+/* 켜져 있는 스템들 기준 시간에 다시 맞추기 */
+function syncActiveStems() {
+  const t = loopClock.currentTime;
 
-      console.log("스템 로드 성공:", key);
-    } catch (error) {
-      console.error("스템 디코딩 실패:", key, src, error);
+  activeStems.forEach((key) => {
+    const stem = stems[key];
+    if (!stem) return;
+
+    const diff = Math.abs(stem.currentTime - t);
+
+    if (diff > 0.05) {
+      stem.currentTime = t;
     }
-  }
-
-  stemsLoaded = true;
+  });
 }
 
-/* 모든 스템을 같은 오디오 시계로 동시에 시작 */
-async function startAllStems() {
-  await loadStems();
-
-  if (!audioCtx) {
-    console.error("AudioContext 없음");
-    return;
+/* 주기적으로 밀림 보정 */
+setInterval(() => {
+  if (clockStarted) {
+    syncActiveStems();
   }
+}, 500);
 
-  if (audioCtx.state === "suspended") {
-    await audioCtx.resume();
-  }
-
-  if (stemsStarted) return;
-
-  const startAt = audioCtx.currentTime + 0.1;
-
-  for (const [key, buffer] of Object.entries(stemBuffers)) {
-    const gain = stemGains[key];
-    if (!gain) continue;
-
-    const source = audioCtx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    source.connect(gain);
-    source.start(startAt, 0);
-
-    console.log("스템 시작:", key);
-  }
-
-  stemsStarted = true;
-}
-
-/* 단어 클릭 시 스템 볼륨만 켜고 끄기 */
+/* 단어 클릭 시 스템 볼륨 켜고 끄기 */
 async function playSound(key, clickedWord) {
   console.log("clicked:", key);
 
+  // 세상 클릭 시 영상만 표시
   if (key === "world") {
     popupVideo.classList.add("show");
     popupVideo.currentTime = 0;
@@ -103,43 +86,42 @@ async function playSound(key, clickedWord) {
     return;
   }
 
+  // 다른 단어 클릭 시 영상 숨김
   popupVideo.pause();
   popupVideo.currentTime = 0;
   popupVideo.classList.remove("show");
 
-  if (!stemMap[key]) {
+  const stem = stems[key];
+
+  if (!stem) {
     console.error("해당 스템 없음:", key);
     return;
   }
 
-  await startAllStems();
+  await startClock();
 
-  const gain = stemGains[key];
-
-  if (!gain) {
-    console.error("Gain 없음. 파일 로드/디코딩 실패 가능:", key);
-    return;
-  }
-
+  // 이미 켜져 있으면 끄기
   if (activeStems.has(key)) {
-    gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.02);
+    stem.volume = 0;
+    stem.pause();
     activeStems.delete(key);
     clickedWord.classList.remove("playing");
     return;
   }
 
-  gain.gain.setTargetAtTime(1, audioCtx.currentTime, 0.02);
+  // 기준 시간에 맞춰서 켜기
+  stem.currentTime = loopClock.currentTime;
+  stem.volume = 1;
+
+  stem.play().catch((error) => {
+    console.error("스템 재생 실패:", key, error);
+  });
+
   activeStems.add(key);
   clickedWord.classList.add("playing");
-}
 
-/* 단어 클릭 */
-document.querySelectorAll(".word").forEach((word) => {
-  word.addEventListener("click", (event) => {
-    event.stopPropagation();
-    playSound(word.dataset.sound, word);
-  });
-});
+  syncActiveStems();
+}
 
 /* 네비 */
 const navTrigger = document.getElementById("navTrigger");
