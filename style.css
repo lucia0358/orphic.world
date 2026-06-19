@@ -30,14 +30,6 @@ body {
   overflow: hidden;
   flex-shrink: 0;
 }
-/* 스크린 요동 */
-@keyframes wobble {
-  0%   { transform: skewX(0deg); }
-  25%  { transform: skewX(1deg); }
-  50%  { transform: skewX(-1deg); }
-  75%  { transform: skewX(0.5deg); }
-  100% { transform: skewX(0deg); }
-}
 
 .screen {
   animation: wobble 2s infinite ease-in-out;
@@ -144,21 +136,17 @@ body {
 /* 영상 */
 .video-popup {
   position: absolute;
-  top: 120px;
-  right: 90px;
+  top: 175px;
+  right: 105px;
 
-  width: 350px;
+  width: 300px;
 
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-
-  z-index: 30;
-}
-
-.video-popup.show {
   opacity: 1;
   pointer-events: auto;
+
+  z-index: 999;
+  border: 3px solid red;
+  background: black;
 }
 
 /* 네비 */
