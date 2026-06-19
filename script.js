@@ -9,7 +9,23 @@ const stemMap = {
 };
 
 const popupVideo = document.getElementById("popupVideo");
+function showVideo() {
+  popupVideo.classList.add("show");
+  popupVideo.currentTime = 0;
 
+  popupVideo.play().catch((error) => {
+    console.error("영상 재생 실패:", error);
+  });
+}
+
+function hideVideo() {
+  popupVideo.classList.remove("show");
+
+  setTimeout(() => {
+    popupVideo.pause();
+    popupVideo.currentTime = 0;
+  }, 800);
+}
 let currentWord = null;
 
 /* 기준 시간용 오디오 */
