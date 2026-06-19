@@ -8,7 +8,14 @@ const stemMap = {
 };
 
 const popupVideo = document.getElementById("popupVideo");
+
+let videoFadeTimer = null;
+let currentWord = null;
+
+/* 영상 페이드인 */
 function showVideo() {
+  clearTimeout(videoFadeTimer);
+
   popupVideo.classList.add("show");
   popupVideo.currentTime = 0;
 
@@ -17,15 +24,19 @@ function showVideo() {
   });
 }
 
+/* 영상 페이드아웃 */
 function hideVideo() {
   popupVideo.classList.remove("show");
 
-  setTimeout(() => {
-    popupVideo.pause();
-    popupVideo.currentTime = 0;
+  clearTimeout(videoFadeTimer);
+
+  videoFadeTimer = setTimeout(() => {
+    if (!popupVideo.classList.contains("show")) {
+      popupVideo.pause();
+      popupVideo.currentTime = 0;
+    }
   }, 800);
 }
-let currentWord = null;
 
 /* 기준 시간용 오디오 */
 const loopClock = new Audio("music/Bass.mp3");
@@ -88,23 +99,17 @@ setInterval(() => {
 async function playSound(key, clickedWord) {
   console.log("clicked:", key);
 
+  if (!key) return;
+
   // 세상 클릭 시 영상만 표시
   if (key === "world") {
-    popupVideo.classList.add("show");
-    popupVideo.currentTime = 0;
-
-    popupVideo.play().catch((error) => {
-      console.error("영상 재생 실패:", error);
-    });
-
+    showVideo();
     clickedWord.classList.add("playing");
     return;
   }
 
   // 다른 단어 클릭 시 영상 숨김
-  popupVideo.pause();
-  popupVideo.currentTime = 0;
-  popupVideo.classList.remove("show");
+  hideVideo();
 
   const stem = stems[key];
 
@@ -119,6 +124,7 @@ async function playSound(key, clickedWord) {
   if (activeStems.has(key)) {
     stem.volume = 0;
     stem.pause();
+
     activeStems.delete(key);
     clickedWord.classList.remove("playing");
     return;
@@ -138,6 +144,14 @@ async function playSound(key, clickedWord) {
   syncActiveStems();
 }
 
+/* 단어 클릭 */
+document.querySelectorAll(".word").forEach((word) => {
+  word.addEventListener("click", (event) => {
+    event.stopPropagation();
+    playSound(word.dataset.sound, word);
+  });
+});
+
 /* 네비 */
 const navTrigger = document.getElementById("navTrigger");
 const infoImage = document.getElementById("infoImage");
@@ -154,4 +168,3 @@ infoImage.addEventListener("click", (e) => {
 document.addEventListener("click", () => {
   infoImage.classList.remove("show");
 });
-
