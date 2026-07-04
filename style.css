@@ -24,8 +24,8 @@ body {
 /* 메인 */
 .stage {
   position: relative;
-  width: 1000px;
-  height: 720px;
+  width: 1200px;
+  height: 743px;
   background: url("img/background2.png") center center / cover no-repeat;
   overflow: hidden;
   flex-shrink: 0;
