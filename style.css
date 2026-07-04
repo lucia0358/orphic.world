@@ -178,10 +178,10 @@ body {
 #poem .char {
   display: inline-block;
   transform: translate(var(--scatter-x), var(--scatter-y)) rotate(var(--scatter-r));
-  opacity: 0.25;
+  opacity: 0.48;
   transition:
-    transform 2.5s ease,
-    opacity 1.2s ease;
+    transform 3s ease,
+    opacity 1.6s ease;
 }
 
 /* 마우스가 가까워져 문장이 완성된 상태 */
