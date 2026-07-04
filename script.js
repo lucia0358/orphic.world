@@ -181,14 +181,13 @@ const poemPages = [
   `,
 
   `
-    아직 쓰여지지 않은 페이지 - 2
+    아직 쓰이지 않은 페이지 - 2
   `,
 
   `
-    아직 쓰여지지 않은 페이지 - 3
+    아직 쓰이지 않은 페이지 - 3
   `
 ];
-
 const poemEl = document.getElementById("poem");
 const stageEl = document.querySelector(".stage");
 
