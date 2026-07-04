@@ -245,30 +245,3 @@ document.addEventListener("click", () => {
     }
   });
 })();
-
-
-/* LP판 회전 */
-(() => {
-  const lp = document.getElementById("lpRecord");
-
-  if (!lp) {
-    console.warn("lpRecord 요소를 찾을 수 없음");
-    return;
-  }
-
-  let lpAngle = 0;
-  let lpSpeed = 0;
-
-  function animateLp() {
-    lpAngle += lpSpeed;
-    lp.style.transform = `rotate(${lpAngle}deg)`;
-
-    requestAnimationFrame(animateLp);
-  }
-
-  animateLp();
-
-  window.setLpSpeed = function (speed) {
-    lpSpeed = speed;
-  };
-})();
