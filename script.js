@@ -167,3 +167,81 @@ infoImage.addEventListener("click", (e) => {
 document.addEventListener("click", () => {
   infoImage.classList.remove("show");
 });
+
+/* 글자 흩어짐 → 문장 정렬 효과 */
+(() => {
+  const poemEl = document.getElementById("poem");
+  const stageEl = document.querySelector(".stage");
+
+  if (!poemEl || !stageEl) {
+    console.error("poem 또는 stage 요소를 찾을 수 없음");
+    return;
+  }
+
+  function splitTextIntoChars(element) {
+    const childNodes = [...element.childNodes];
+
+    childNodes.forEach((node) => {
+      // 일반 텍스트 노드일 때
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent;
+        const fragment = document.createDocumentFragment();
+
+        [...text].forEach((char) => {
+          // 공백, 줄바꿈은 그대로 유지
+          if (char.trim() === "") {
+            fragment.appendChild(document.createTextNode(char));
+            return;
+          }
+
+          const span = document.createElement("span");
+          span.className = "char";
+          span.textContent = char;
+
+          const x = `${Math.random() * 320 - 160}px`;
+          const y = `${Math.random() * 260 - 130}px`;
+          const r = `${Math.random() * 90 - 45}deg`;
+
+          span.style.setProperty("--scatter-x", x);
+          span.style.setProperty("--scatter-y", y);
+          span.style.setProperty("--scatter-r", r);
+
+          fragment.appendChild(span);
+        });
+
+        node.replaceWith(fragment);
+      }
+
+      // span.word 같은 요소 안쪽 글자도 다시 쪼갬
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        splitTextIntoChars(node);
+      }
+    });
+  }
+
+  splitTextIntoChars(poemEl);
+
+  stageEl.addEventListener("mousemove", (event) => {
+    const rect = stageEl.getBoundingClientRect();
+
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    // 일단 책 중앙 기준
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const dx = mouseX - centerX;
+    const dy = mouseY - centerY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // 숫자가 클수록 더 멀리서도 문장이 모임
+    const gatherDistance = 260;
+
+    if (distance < gatherDistance) {
+      poemEl.classList.add("gathered");
+    } else {
+      poemEl.classList.remove("gathered");
+    }
+  });
+})();
