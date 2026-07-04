@@ -148,6 +148,7 @@ document.querySelectorAll(".word").forEach((word) => {
   word.addEventListener("click", (event) => {
     event.stopPropagation();
     playSound(word.dataset.sound, word);
+    playLpPulse();
   });
 });
 
@@ -245,3 +246,17 @@ document.addEventListener("click", () => {
     }
   });
 })();
+
+/* LP 파동 효과 */
+function playLpPulse() {
+  const lpPulse = document.getElementById("lpPulse");
+
+  if (!lpPulse) return;
+
+  lpPulse.classList.remove("play");
+
+  // 같은 애니메이션을 다시 실행시키기 위한 강제 리셋
+  void lpPulse.offsetWidth;
+
+  lpPulse.classList.add("play");
+}
