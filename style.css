@@ -180,7 +180,7 @@ body {
   transform: translate(var(--scatter-x), var(--scatter-y)) rotate(var(--scatter-r));
   opacity: 0.25;
   transition:
-    transform 2s ease,
+    transform 2.5s ease,
     opacity 1.2s ease;
 }
 
