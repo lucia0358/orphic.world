@@ -311,7 +311,6 @@ stageEl.addEventListener("mousemove", (event) => {
     poemEl.classList.remove("gathered");
   }
 });
-
 /* 드래그로 페이지 넘김 */
 let dragStartX = null;
 let dragStartY = null;
