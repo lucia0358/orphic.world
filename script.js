@@ -236,7 +236,7 @@ document.addEventListener("click", () => {
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     // 숫자가 클수록 더 멀리서도 문장이 모임
-    const gatherDistance = 260;
+    const gatherDistance = 360;
 
     if (distance < gatherDistance) {
       poemEl.classList.add("gathered");
