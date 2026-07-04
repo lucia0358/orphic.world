@@ -208,7 +208,7 @@ body {
   text-underline-offset: 3px;
 }
 
-//* 페이지 전환 느낌 *//
+/* 페이지 전환 느낌 */
 #poem {
   transition:
     opacity 0.45s ease,
