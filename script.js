@@ -178,14 +178,6 @@ const poemPages = [
     가슴 한구석 듬성듬성 얽매인 사진 한 점
     그것이 나 세상 살아가게 하는
     내 <span class="word" data-sound="world">세상</span> 전부와도 같았는데
-  `,
-
-  `
-    아직 쓰이지 않은 페이지 - 2
-  `,
-
-  `
-    아직 쓰이지 않은 페이지 - 3
   `
 ];
 const poemEl = document.getElementById("poem");
@@ -213,9 +205,9 @@ function splitTextIntoChars(element) {
         span.className = "char";
         span.textContent = char;
 
-        const x = `${Math.random() * 320 - 160}px`;
-        const y = `${Math.random() * 260 - 130}px`;
-        const r = `${Math.random() * 90 - 45}deg`;
+        const x = `${Math.random() * 90 - 45}px`;
+        const y = `${Math.random() * 70 - 35}px`;
+        const r = `${Math.random() * 28 - 14}deg`;
 
         span.style.setProperty("--scatter-x", x);
         span.style.setProperty("--scatter-y", y);
@@ -228,9 +220,7 @@ function splitTextIntoChars(element) {
     }
 
     if (node.nodeType === Node.ELEMENT_NODE) {
-      // 이미 char인 글자는 다시 쪼개지 않음
       if (node.classList.contains("char")) return;
-
       splitTextIntoChars(node);
     }
   });
