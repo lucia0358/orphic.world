@@ -26,7 +26,7 @@ body {
   position: relative;
   width: 1000px;
   height: 720px;
-  background: url("img/Mainn.png") center center / cover no-repeat;
+  background: url("img/background2.png") center center / cover no-repeat;
   overflow: hidden;
   flex-shrink: 0;
 }
