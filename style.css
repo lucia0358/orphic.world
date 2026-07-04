@@ -243,35 +243,3 @@ body {
     height: 186.19px;
   }
 }
-/* LP판 반쪽만 보이게 하는 창 */
-.lp-window {
-  position: absolute;
-
-  /* 여기로 LP 위치 조절 */
-  top: 235px;
-  right: 120px;
-
-  /* LP 전체 크기의 절반만 보이게 */
-  width: 120px;
-  height: 240px;
-
-  overflow: hidden;
-  z-index: 4;
-  pointer-events: none;
-}
-
-/* 실제로 회전하는 LP판 */
-.lp-record {
-  position: absolute;
-  top: 0;
-
-  /* LP 중심이 lp-window의 왼쪽 경계에 오게 함 */
-  left: -120px;
-
-  width: 240px;
-  height: 240px;
-  object-fit: contain;
-
-  transform-origin: center center;
-  transform: rotate(0deg);
-}
