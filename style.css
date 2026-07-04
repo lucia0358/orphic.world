@@ -207,7 +207,69 @@ body {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+/* LP 클릭 파동 효과 */
+.lp-pulse {
+  position: absolute;
 
+  /* 여기 위치는 LP판에 맞게 조절 */
+  top: 235px;
+  right: 115px;
+
+  width: 230px;
+  height: 230px;
+
+  pointer-events: none;
+  z-index: 6;
+
+  opacity: 0;
+}
+
+.lp-pulse span {
+  position: absolute;
+  inset: 0;
+
+  border-radius: 50%;
+  border: 1px solid rgba(150, 20, 20, 0.65);
+
+  box-shadow:
+    0 0 12px rgba(150, 20, 20, 0.45),
+    inset 0 0 16px rgba(150, 20, 20, 0.18);
+
+  transform: scale(0.72);
+  opacity: 0;
+}
+
+.lp-pulse.play {
+  opacity: 1;
+}
+
+.lp-pulse.play span:nth-child(1) {
+  animation: lpWave 1s ease-out;
+}
+
+.lp-pulse.play span:nth-child(2) {
+  animation: lpWave 1s ease-out 0.14s;
+}
+
+.lp-pulse.play span:nth-child(3) {
+  animation: lpWave 1s ease-out 0.28s;
+}
+
+@keyframes lpWave {
+  0% {
+    opacity: 0;
+    transform: scale(0.65);
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.28);
+  }
+}
 /* ===== 모바일 ===== */
 @media (max-width: 700px) {
   .stage {
