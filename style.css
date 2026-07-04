@@ -208,6 +208,40 @@ body {
   text-underline-offset: 3px;
 }
 
+//* 페이지 전환 느낌 *//
+#poem {
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease;
+}
+
+#poem.page-out-left {
+  opacity: 0;
+  transform: translateX(-35px);
+}
+
+#poem.page-out-right {
+  opacity: 0;
+  transform: translateX(35px);
+}
+
+#poem.page-in {
+  animation: poemPageIn 0.55s ease;
+}
+
+@keyframes poemPageIn {
+  0% {
+    opacity: 0;
+    transform: translateX(25px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
 /* ===== 모바일 ===== */
 @media (max-width: 700px) {
   .stage {
