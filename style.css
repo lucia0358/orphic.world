@@ -185,29 +185,30 @@ body {
 }
 
 /* 마우스가 가까워져 문장이 완성된 상태 */
+#poem .char {
+  display: inline-block;
+  transform: translate(var(--scatter-x), var(--scatter-y)) rotate(var(--scatter-r));
+  opacity: 0.72;
+  transition:
+    transform 3s ease,
+    opacity 1.6s ease;
+}
+
 #poem.gathered .char {
   transform: translate(0, 0) rotate(0deg);
   opacity: 1;
 }
 
-/* 문장이 흩어져 있을 때는 단어 클릭 안 되게 */
 #poem:not(.gathered) .word {
   pointer-events: none;
 }
 
-/* 문장이 모였을 때만 클릭 가능 */
 #poem.gathered .word {
   pointer-events: auto;
   cursor: pointer;
-}
-
-/* 클릭 가능한 단어 표시 */
-#poem.gathered .word {
-  color: inherit;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-
 /* 페이지 전환 느낌 */
 #poem {
   transition:
@@ -215,19 +216,7 @@ body {
     transform 0.45s ease;
 }
 
-#poem.page-out-left {
-  opacity: 0;
-  transform: translateX(-35px);
-}
 
-#poem.page-out-right {
-  opacity: 0;
-  transform: translateX(35px);
-}
-
-#poem.page-in {
-  animation: poemPageIn 0.55s ease;
-}
 
 @keyframes poemPageIn {
   0% {
