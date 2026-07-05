@@ -38,8 +38,8 @@ body {
 /* 시 */
 .poem-page {
   position: absolute;
-  left: 100px;
-  top: 200px;
+  left: 150px;
+  top: 190px;
   width: 368px;
   display: flex;
   justify-content: center;
