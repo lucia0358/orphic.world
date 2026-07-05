@@ -180,7 +180,7 @@ body {
   transform: translate(var(--scatter-x), var(--scatter-y)) rotate(var(--scatter-r));
   opacity: 0.48;
   transition:
-    transform 3s ease,
+    transform 2.6s ease,
     opacity 1.6s ease;
 }
 
@@ -190,7 +190,7 @@ body {
   transform: translate(var(--scatter-x), var(--scatter-y)) rotate(var(--scatter-r));
   opacity: 0.72;
   transition:
-    transform 3s ease,
+    transform 2.6s ease,
     opacity 1.6s ease;
 }
 
