@@ -152,6 +152,92 @@ async function playSound(key, clickedWord) {
   }
 }
 
+const poemEl = document.getElementById("poem");
+const stageEl = document.querySelector(".stage");
+
+/* 전체 시 글자를 자동으로 쪼개기 */
+function splitTextIntoChars(element) {
+  const childNodes = [...element.childNodes];
+
+  childNodes.forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      const fragment = document.createDocumentFragment();
+
+      [...text].forEach((char) => {
+        if (char.trim() === "") {
+          fragment.appendChild(document.createTextNode(char));
+          return;
+        }
+
+        const span = document.createElement("span");
+        span.className = "char";
+        span.textContent = char;
+
+        const x = `${Math.random() * 36 - 18}px`;
+        const y = `${Math.random() * 28 - 14}px`;
+        const r = `${Math.random() * 12 - 6}deg`;
+
+        span.style.setProperty("--scatter-x", x);
+        span.style.setProperty("--scatter-y", y);
+        span.style.setProperty("--scatter-r", r);
+
+        fragment.appendChild(span);
+      });
+
+      node.replaceWith(fragment);
+    }
+
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      if (node.classList.contains("char")) return;
+      splitTextIntoChars(node);
+    }
+  });
+}
+
+/* 단어 클릭 이벤트 연결 */
+function bindWordClicks() {
+  document.querySelectorAll("#poem .word").forEach((word) => {
+    word.addEventListener("click", (event) => {
+      event.stopPropagation();
+      playSound(word.dataset.sound, word);
+    });
+  });
+}
+
+/* 마우스가 시 가까이 오면 문장 정렬 */
+function bindGatherEffect() {
+  stageEl.addEventListener("mousemove", (event) => {
+    const rect = poemEl.getBoundingClientRect();
+
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const dx = event.clientX - centerX;
+    const dy = event.clientY - centerY;
+
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    const gatherDistance = 260;
+
+    if (distance < gatherDistance) {
+      poemEl.classList.add("gathered");
+    } else {
+      poemEl.classList.remove("gathered");
+    }
+  });
+}
+
+/* 실행 */
+if (poemEl && stageEl) {
+  splitTextIntoChars(poemEl);
+  bindWordClicks();
+  bindGatherEffect();
+
+  console.log("char 개수:", poemEl.querySelectorAll(".char").length);
+} else {
+  console.error("poem 또는 stage를 찾을 수 없음");
+}
 
 /* 네비 */
 const navTrigger = document.getElementById("navTrigger");
