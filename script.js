@@ -175,8 +175,7 @@ function splitTextIntoChars(element) {
         span.textContent = char;
 
         const x = `${Math.random() * 72 - 36}px`;
-        const y = `${Math.random() * 28 - 14}px`;
-        const r = `${Math.random() * 56 - 26}deg`;
+        const y = `${Math.random() * 48 - 24}px`;
 
         span.style.setProperty("--scatter-x", x);
         span.style.setProperty("--scatter-y", y);
