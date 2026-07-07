@@ -157,8 +157,8 @@ body {
 /* 네비 */
 .info-image {
   position: absolute;
-  top: 62px;
-  right: -52px;
+  top: 110px;
+  right: 100px;
   width: 312px;
   height: 594px;
   z-index: 25;
