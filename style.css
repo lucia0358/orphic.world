@@ -45,6 +45,27 @@ body {
   animation: wobble 2s infinite ease-in-out;
 }
 
+.sentence {
+  position: absolute;
+  z-index: 6;
+  color: #1f1f1f;
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.sentence-1 {
+  left: 570px;
+  top: 220px;
+}
+
+.sentence-2 {
+  left: 610px;
+  top: 120px;
+}
+
 /* 시 */
 .poem-page {
   position: absolute;
