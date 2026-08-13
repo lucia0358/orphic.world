@@ -1,5 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Prosto+One&display=swap");
+@font-face {
+  font-family: "A2Z";
+  src: url("font/A2Z-4Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
+@font-face {
+  font-family: "A2Z";
+  src: url("font/A2Z-6SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
 * {
   margin: 0;
   padding: 0;
@@ -60,6 +74,11 @@ body {
 .sentence-1 {
   left: 111px;
   top: 210px;
+  color: #000000;
+  font-weight: 400;
+  font-size: 8px;
+  letter-spacing: -0.03em;
+  opacity: 0.7;
 }
 
 .sentence-2 {
@@ -68,6 +87,11 @@ body {
 }
 
 .sentence-3 {
+  left: 115px;
+  top: 620px;
+}
+
+.sentence-4 {
   left: 115px;
   top: 620px;
 }
