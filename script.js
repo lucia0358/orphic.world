@@ -249,6 +249,7 @@ if (poemEl && stageEl) {
   splitTextIntoChars(poemEl);
   bindWordClicks();
   bindGatherEffect();
+  updateWorldState();
 
   console.log("char 개수:", poemEl.querySelectorAll(".char").length);
 } else {
