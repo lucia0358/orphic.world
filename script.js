@@ -46,6 +46,21 @@ loopClock.volume = 0;
 const stems = {};
 const activeStems = new Set();
 
+function updateWorldState() {
+  const worldWord = document.querySelector('[data-sound="world"]');
+  if (!worldWord) return;
+
+  const openCount = activeStems.size;
+
+  if (openCount >= 5) {
+    worldWord.classList.remove("world-locked");
+    worldWord.classList.add("world-open");
+  } else {
+    worldWord.classList.add("world-locked");
+    worldWord.classList.remove("world-open");
+  }
+}
+
 Object.entries(stemMap).forEach(([key, src]) => {
   const audio = new Audio(src);
   audio.loop = true;
