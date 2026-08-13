@@ -72,8 +72,8 @@ body {
 }
 
 .sentence-1 {
-  left: 151px;
-  top: 110px;
+  left: 148px;
+  top: 108px;
   color: #000000;
   font-weight: 400;
   font-size: 8.5px;
@@ -82,11 +82,11 @@ body {
 }
 
 .sentence-2 {
-  left: 210px;
-  top: 220px;
+  left: 220px;
+  top: 180px;
   color: #000000;
   font-weight: 600;
-  font-size: 24px;
+  font-size: 22px;
 }
 
 .sentence-3 {
