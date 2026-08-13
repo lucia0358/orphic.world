@@ -151,9 +151,21 @@ body {
   text-shadow: 0 0 6px rgba(199, 77, 77, 0.35);
 }
 
-.locked {
-  opacity: 0.35;
+/* 처음 세상 단어 잠금 상태 */
+.word.world-locked {
+  opacity: 0.28;
   pointer-events: none;
+  color: #1f1f1f;
+  text-decoration: none;
+}
+
+/* 세상 단어 활성화 상태 */
+.word.world-open {
+  opacity: 1;
+  pointer-events: auto;
+  color: #9b2f2f;
+  text-shadow: 0 0 8px rgba(155, 47, 47, 0.35);
+  cursor: pointer;
 }
 
 /* 009 버튼 */
