@@ -116,11 +116,14 @@ async function playSound(key, clickedWord) {
   if (!key) return;
 
   // 세상 클릭 시 영상만 표시
-  if (key === "world") {
-    showVideo();
-    clickedWord.classList.add("playing");
-    return;
-  }
+ if (key === "world") {
+  if (activeStems.size < 3) {
+    console.log("아직 세상이 열리지 않음");
+    return;}
+
+  showVideo();
+  clickedWord.classList.add("playing");
+  return;}
 
   // 다른 단어 클릭 시 영상 숨김
   hideVideo();
@@ -144,6 +147,7 @@ async function playSound(key, clickedWord) {
 
     activeStems.delete(key);
     clickedWord.classList.remove("playing");
+    updateWorldState();
     return;
   }
 
@@ -161,9 +165,11 @@ async function playSound(key, clickedWord) {
 
     activeStems.add(key);
     clickedWord.classList.add("playing");
-
+    updateWorldState();
     syncActiveStems();
-  } catch (error) {
+    } 
+    
+  catch (error) {
     console.error("스템 재생 실패:", key, error);
   }
 }
