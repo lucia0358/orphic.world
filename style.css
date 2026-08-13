@@ -82,7 +82,7 @@ body {
 }
 
 .sentence-2 {
-  left: 240px;
+  left: 240.5px;
   top: 155px;
   color: #000000;
   font-weight: 600;
@@ -90,8 +90,8 @@ body {
 }
 
 .sentence-3 {
-  left: 150px;
-  top: 639px;
+  left: 155px;
+  top: 638px;
   color: #000000;
   font-weight: 400;
   font-size: 9.5px;
