@@ -72,12 +72,12 @@ body {
 }
 
 .sentence-1 {
-  left: 111px;
-  top: 210px;
+  left: 151px;
+  top: 110px;
   color: #000000;
   font-weight: 400;
-  font-size: 6px;
-  letter-spacing: -0.03em;
+  font-size: 6.5px;
+  letter-spacing: 0em;
   opacity: 0.63;
 }
 
