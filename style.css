@@ -151,6 +151,11 @@ body {
   text-shadow: 0 0 6px rgba(199, 77, 77, 0.35);
 }
 
+.locked {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
 /* 009 버튼 */
 .nav-trigger {
   position: absolute;
