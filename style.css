@@ -76,17 +76,17 @@ body {
   top: 110px;
   color: #000000;
   font-weight: 400;
-  font-size: 7px;
+  font-size: 8.5px;
   letter-spacing: 0em;
   opacity: 0.55;
 }
 
 .sentence-2 {
-  left: 310px;
-  top: 100px;
+  left: 210px;
+  top: 220px;
   color: #000000;
   font-weight: 600;
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .sentence-3 {
