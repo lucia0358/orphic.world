@@ -82,7 +82,7 @@ body {
 }
 
 .sentence-2 {
-  left: 235px;
+  left: 238px;
   top: 155px;
   color: #000000;
   font-weight: 600;
@@ -91,11 +91,14 @@ body {
 
 .sentence-3 {
   left: 115px;
-  top: 620px;
+  top: 640px;
+  color: #000000;
+  font-weight: 400;
+  font-size: 9.5px;
 }
 
 .sentence-4 {
-  left: 115px;
+  left: 150px;
   top: 620px;
 }
 
