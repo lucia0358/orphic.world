@@ -90,15 +90,15 @@ body {
 }
 
 .sentence-3 {
-  left: 168px;
-  top: 633px;
+  left: 167px;
+  bottom: 66px;
   color: #000000;
   font-weight: 400;
   font-size: 9.5px;
 }
 
 .sentence-4 {
-  left: 150px;
+  right: 150px;
   top: 620px;
 }
 
