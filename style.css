@@ -98,11 +98,11 @@ body {
 }
 
 .sentence-4 {
-  right: 78px;
+  right: 80px;
   top: 310px;
   color: #000000;
   font-weight: 600;
-  font-size: 32px;
+  font-size: 32.3px;
   transform: rotate(90deg);
   transform-origin: left top;
 }
