@@ -63,9 +63,14 @@ function updateWorldState() {
 
 Object.entries(stemMap).forEach(([key, src]) => {
   const audio = new Audio(src);
+
   audio.loop = true;
   audio.preload = "auto";
   audio.volume = 0;
+
+  // 브라우저가 오디오를 미리 받아놓도록
+  audio.load();
+
   stems[key] = audio;
 });
 
@@ -88,26 +93,34 @@ async function startClock() {
 
 /* 켜져 있는 스템들 기준 시간에 다시 맞추기 */
 function syncActiveStems() {
-  const t = loopClock.currentTime;
+  const loopClock = new Audio("music/Bass.mp3");
+loopClock.loop = true;
+loopClock.preload = "auto";
+loopClock.volume = 0;
+loopClock.load();
 
   activeStems.forEach((key) => {
     const stem = stems[key];
-    if (!stem) return;
+    if (!stem || stem.paused) return;
 
-    const diff = Math.abs(stem.currentTime - t);
+    const duration = stem.duration;
 
-    if (diff > 0.05) {
-      stem.currentTime = t;
+    if (!Number.isFinite(duration) || duration <= 0) return;
+
+    let targetTime = t % duration;
+    let diff = Math.abs(stem.currentTime - targetTime);
+
+    // 루프 경계에서 생기는 차이는 무시
+    if (diff > duration / 2) {
+      diff = duration - diff;
+    }
+
+    // 정말 크게 밀렸을 때만 보정
+    if (diff > 0.15) {
+      stem.currentTime = targetTime;
     }
   });
 }
-
-/* 주기적으로 밀림 보정 */
-setInterval(() => {
-  if (clockStarted) {
-    syncActiveStems();
-  }
-}, 500);
 
 /* 단어 클릭 시 스템 볼륨 켜고 끄기 */
 async function playSound(key, clickedWord) {
@@ -152,13 +165,17 @@ async function playSound(key, clickedWord) {
   }
 
   // 기준 시간에 맞춰서 켜기
-  const syncTime =
-    Number.isFinite(stem.duration) && stem.duration > 0
-      ? loopClock.currentTime % stem.duration
-      : loopClock.currentTime;
+const duration = stem.duration;
 
-  stem.currentTime = syncTime;
-  stem.volume = 1;
+if (!Number.isFinite(duration) || duration <= 0) {
+  console.warn("오디오 로딩 중:", key);
+  return;
+}
+
+const syncTime = loopClock.currentTime % duration;
+
+stem.currentTime = syncTime;
+stem.volume = 1;
 
   try {
     await stem.play();
