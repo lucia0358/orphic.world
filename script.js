@@ -11,7 +11,11 @@ const popupVideo = document.getElementById("popupVideo");
 
 let videoFadeTimer = null;
 
-/* 영상 페이드인 */
+
+/* =========================================================
+   영상
+========================================================= */
+
 function showVideo() {
   clearTimeout(videoFadeTimer);
 
@@ -23,7 +27,7 @@ function showVideo() {
   });
 }
 
-/* 영상 페이드아웃 */
+
 function hideVideo() {
   popupVideo.classList.remove("show");
 
@@ -37,29 +41,26 @@ function hideVideo() {
   }, 800);
 }
 
-/* 기준 시간용 오디오 */
+
+/* =========================================================
+   기준 오디오
+   Bass를 전체 음악의 기준 시계로 사용
+========================================================= */
+
 const loopClock = new Audio("music/Bass.mp3");
+
 loopClock.loop = true;
 loopClock.preload = "auto";
 loopClock.volume = 0;
+loopClock.load();
+
+
+/* =========================================================
+   스템 생성
+========================================================= */
 
 const stems = {};
 const activeStems = new Set();
-
-function updateWorldState() {
-  const worldWord = document.querySelector('[data-sound="world"]');
-  if (!worldWord) return;
-
-  const openCount = activeStems.size;
-
-  if (openCount >= 5) {
-    worldWord.classList.remove("world-locked");
-    worldWord.classList.add("world-open");
-  } else {
-    worldWord.classList.add("world-locked");
-    worldWord.classList.remove("world-open");
-  }
-}
 
 Object.entries(stemMap).forEach(([key, src]) => {
   const audio = new Audio(src);
@@ -68,230 +69,598 @@ Object.entries(stemMap).forEach(([key, src]) => {
   audio.preload = "auto";
   audio.volume = 0;
 
-  // 브라우저가 오디오를 미리 받아놓도록
+  // 미리 로딩
   audio.load();
 
   stems[key] = audio;
 });
 
+
 let clockStarted = false;
 
-/* 기준 오디오 시작 */
+
+/* =========================================================
+   기준 오디오 시작
+========================================================= */
+
 async function startClock() {
-  if (clockStarted) return;
+  if (clockStarted) return true;
 
   loopClock.currentTime = 0;
 
   try {
     await loopClock.play();
+
     clockStarted = true;
+
     console.log("루프 기준 시작");
+
+    return true;
+
   } catch (error) {
     console.error("루프 기준 재생 실패:", error);
+
+    return false;
   }
 }
 
-/* 켜져 있는 스템들 기준 시간에 다시 맞추기 */
+
+/* =========================================================
+   스템들을 기준 시간에 맞춤
+========================================================= */
+
 function syncActiveStems() {
-  const loopClock = new Audio("music/Bass.mp3");
-loopClock.loop = true;
-loopClock.preload = "auto";
-loopClock.volume = 0;
-loopClock.load();
+
+  if (!clockStarted) return;
+
+  const t = loopClock.currentTime;
 
   activeStems.forEach((key) => {
+
     const stem = stems[key];
+
     if (!stem || stem.paused) return;
 
     const duration = stem.duration;
 
-    if (!Number.isFinite(duration) || duration <= 0) return;
+    if (!Number.isFinite(duration) || duration <= 0) {
+      return;
+    }
 
-    let targetTime = t % duration;
+    /*
+      각 스템의 길이가 조금 다를 수 있으므로
+      자신의 길이를 기준으로 loopClock 시간을 변환
+    */
+    const targetTime = t % duration;
+
     let diff = Math.abs(stem.currentTime - targetTime);
 
-    // 루프 경계에서 생기는 차이는 무시
+    /*
+      루프 경계에서 생기는 차이 보정
+      예:
+      현재 0.02초
+      목표 19.98초
+
+      실제로는 거의 붙어있는 상태이므로
+      19.96초 차이로 판단하지 않음
+    */
     if (diff > duration / 2) {
       diff = duration - diff;
     }
 
-    // 정말 크게 밀렸을 때만 보정
-    if (diff > 0.15) {
+    /*
+      아주 작은 차이는 건드리지 않음.
+      자꾸 currentTime을 바꾸면
+      오히려 '득득' 끊기는 소리가 날 수 있음.
+    */
+    if (diff > 0.25) {
       stem.currentTime = targetTime;
     }
   });
 }
 
-/* 단어 클릭 시 스템 볼륨 켜고 끄기 */
+
+/* =========================================================
+   주기적인 싱크 보정
+========================================================= */
+
+setInterval(() => {
+
+  if (!clockStarted) return;
+
+  syncActiveStems();
+
+}, 1000);
+
+
+/* =========================================================
+   세상 활성화 상태
+========================================================= */
+
+function updateWorldState() {
+
+  const worldWord =
+    document.querySelector('[data-sound="world"]');
+
+  if (!worldWord) return;
+
+  /*
+    3개 이상 클릭하면 세상 활성화
+  */
+  if (activeStems.size >= 3) {
+
+    worldWord.classList.remove("world-locked");
+    worldWord.classList.add("world-open");
+
+  } else {
+
+    worldWord.classList.add("world-locked");
+    worldWord.classList.remove("world-open");
+
+  }
+}
+
+
+/* =========================================================
+   단어 클릭 → 음악
+========================================================= */
+
 async function playSound(key, clickedWord) {
+
   console.log("clicked:", key);
 
   if (!key) return;
 
-  // 세상 클릭 시 영상만 표시
- if (key === "world") {
-  if (activeStems.size < 3) {
-    console.log("아직 세상이 열리지 않음");
-    return;}
 
-  showVideo();
-  clickedWord.classList.add("playing");
-  return;}
+  /* -------------------------------------------------------
+     세상
+  ------------------------------------------------------- */
 
-  // 다른 단어 클릭 시 영상 숨김
+  if (key === "world") {
+
+    /*
+      음악 3개 이상 활성화되어야 세상 열림
+    */
+    if (activeStems.size < 3) {
+
+      console.log(
+        "아직 세상이 열리지 않음:",
+        activeStems.size
+      );
+
+      return;
+    }
+
+    showVideo();
+
+    clickedWord.classList.add("playing");
+
+    return;
+  }
+
+
+  /* -------------------------------------------------------
+     다른 단어 클릭
+  ------------------------------------------------------- */
+
   hideVideo();
 
-  // world 단어 playing 표시 제거
-  document.querySelector('[data-sound="world"]')?.classList.remove("playing");
+
+  /*
+    세상 playing 표시 제거
+  */
+  document
+    .querySelector('[data-sound="world"]')
+    ?.classList.remove("playing");
+
 
   const stem = stems[key];
 
   if (!stem) {
-    console.error("해당 스템 없음:", key);
+
+    console.error(
+      "해당 스템 없음:",
+      key
+    );
+
     return;
   }
 
-  await startClock();
 
-  // 이미 켜져 있으면 끄기
+  /* -------------------------------------------------------
+     기준 오디오 시작
+  ------------------------------------------------------- */
+
+  const clockOK = await startClock();
+
+  if (!clockOK) {
+    return;
+  }
+
+
+  /* -------------------------------------------------------
+     이미 켜져 있는 음악이면 끄기
+  ------------------------------------------------------- */
+
   if (activeStems.has(key)) {
+
     stem.volume = 0;
     stem.pause();
 
     activeStems.delete(key);
+
     clickedWord.classList.remove("playing");
+
     updateWorldState();
+
     return;
   }
 
-  // 기준 시간에 맞춰서 켜기
-const duration = stem.duration;
 
-if (!Number.isFinite(duration) || duration <= 0) {
-  console.warn("오디오 로딩 중:", key);
-  return;
-}
+  /* -------------------------------------------------------
+     오디오 로딩 확인
+  ------------------------------------------------------- */
 
-const syncTime = loopClock.currentTime % duration;
+  const duration = stem.duration;
 
-stem.currentTime = syncTime;
-stem.volume = 1;
+  if (
+    !Number.isFinite(duration) ||
+    duration <= 0
+  ) {
+
+    console.warn(
+      "오디오 아직 로딩되지 않음:",
+      key
+    );
+
+    /*
+      다시 로드
+    */
+    stem.load();
+
+    return;
+  }
+
+
+  /* -------------------------------------------------------
+     기준 시간 계산
+  ------------------------------------------------------- */
+
+  const syncTime =
+    loopClock.currentTime % duration;
+
+
+  /*
+    기준 시간에 먼저 위치시킴
+  */
+  stem.currentTime = syncTime;
+
+  stem.volume = 1;
+
+
+  /* -------------------------------------------------------
+     재생
+  ------------------------------------------------------- */
 
   try {
+
     await stem.play();
 
+    /*
+      실제 재생 성공 후 active 등록
+    */
     activeStems.add(key);
+
     clickedWord.classList.add("playing");
+
     updateWorldState();
+
+    /*
+      처음 한 번만 아주 살짝 보정
+    */
     syncActiveStems();
-    } 
-    
-  catch (error) {
-    console.error("스템 재생 실패:", key, error);
+
+    console.log(
+      `${key} 시작`,
+      "clock:",
+      loopClock.currentTime,
+      "stem:",
+      stem.currentTime
+    );
+
+  } catch (error) {
+
+    console.error(
+      "스템 재생 실패:",
+      key,
+      error
+    );
+
   }
 }
+
+
+/* =========================================================
+   시 본문
+========================================================= */
 
 const poemEl = document.getElementById("poem");
 const stageEl = document.querySelector(".stage");
 
-/* 전체 시 글자를 자동으로 쪼개기 */
+
+/* =========================================================
+   전체 시 글자를 한 글자씩 쪼개기
+========================================================= */
+
 function splitTextIntoChars(element) {
+
   const childNodes = [...element.childNodes];
 
   childNodes.forEach((node) => {
+
+
+    /* -----------------------------------------------------
+       일반 텍스트
+    ----------------------------------------------------- */
+
     if (node.nodeType === Node.TEXT_NODE) {
+
       const text = node.textContent;
-      const fragment = document.createDocumentFragment();
+
+      const fragment =
+        document.createDocumentFragment();
+
 
       [...text].forEach((char) => {
+
+
+        /*
+          공백 / 줄바꿈은 그대로 둠
+        */
+
         if (char.trim() === "") {
-          fragment.appendChild(document.createTextNode(char));
+
+          fragment.appendChild(
+            document.createTextNode(char)
+          );
+
           return;
         }
 
-        const span = document.createElement("span");
+
+        const span =
+          document.createElement("span");
+
         span.className = "char";
+
         span.textContent = char;
 
-        const x = `${Math.random() * 320 - 160}px`;
-        const y = `${Math.random() * 260 - 130}px`;
-        const r = `${Math.random() * 90 - 45}deg`; 
 
-        span.style.setProperty("--scatter-x", x);
-        span.style.setProperty("--scatter-y", y);
-        span.style.setProperty("--scatter-r", r);
+        /*
+          흩어지는 위치
+        */
+
+        const x =
+          `${Math.random() * 320 - 160}px`;
+
+        const y =
+          `${Math.random() * 260 - 130}px`;
+
+        const r =
+          `${Math.random() * 90 - 45}deg`;
+
+
+        span.style.setProperty(
+          "--scatter-x",
+          x
+        );
+
+        span.style.setProperty(
+          "--scatter-y",
+          y
+        );
+
+        span.style.setProperty(
+          "--scatter-r",
+          r
+        );
+
 
         fragment.appendChild(span);
+
       });
 
+
       node.replaceWith(fragment);
+
     }
+
+
+    /* -----------------------------------------------------
+       word 같은 HTML 요소 안쪽
+    ----------------------------------------------------- */
 
     if (node.nodeType === Node.ELEMENT_NODE) {
-      if (node.classList.contains("char")) return;
+
+      /*
+        이미 char이면 다시 쪼개지 않음
+      */
+
+      if (
+        node.classList.contains("char")
+      ) {
+        return;
+      }
+
       splitTextIntoChars(node);
     }
+
   });
 }
 
-/* 단어 클릭 이벤트 연결 */
+
+/* =========================================================
+   단어 클릭 이벤트
+========================================================= */
+
 function bindWordClicks() {
-  document.querySelectorAll("#poem .word").forEach((word) => {
-    word.addEventListener("click", (event) => {
-      event.stopPropagation();
-      playSound(word.dataset.sound, word);
+
+  document
+    .querySelectorAll("#poem .word")
+    .forEach((word) => {
+
+      word.addEventListener(
+        "click",
+        (event) => {
+
+          event.stopPropagation();
+
+          playSound(
+            word.dataset.sound,
+            word
+          );
+
+        }
+      );
+
     });
-  });
 }
 
-/* 마우스가 시 가까이 오면 문장 정렬 */
+
+/* =========================================================
+   마우스가 시에 가까워지면 정렬
+========================================================= */
+
 function bindGatherEffect() {
-  stageEl.addEventListener("mousemove", (event) => {
-    const rect = poemEl.getBoundingClientRect();
 
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+  stageEl.addEventListener(
+    "mousemove",
+    (event) => {
 
-    const dx = event.clientX - centerX;
-    const dy = event.clientY - centerY;
+      const rect =
+        poemEl.getBoundingClientRect();
 
-    const distance = Math.sqrt(dx * dx + dy * dy);
 
-    const gatherDistance = 260;
+      const centerX =
+        rect.left + rect.width / 2;
 
-    if (distance < gatherDistance) {
-      poemEl.classList.add("gathered");
-    } else {
-      poemEl.classList.remove("gathered");
+      const centerY =
+        rect.top + rect.height / 2;
+
+
+      const dx =
+        event.clientX - centerX;
+
+      const dy =
+        event.clientY - centerY;
+
+
+      const distance =
+        Math.sqrt(
+          dx * dx + dy * dy
+        );
+
+
+      /*
+        이 숫자가 클수록
+        멀리서도 글자가 모임
+      */
+
+      const gatherDistance = 260;
+
+
+      if (distance < gatherDistance) {
+
+        poemEl.classList.add(
+          "gathered"
+        );
+
+      } else {
+
+        poemEl.classList.remove(
+          "gathered"
+        );
+
+      }
+
     }
-  });
+  );
 }
 
-/* 실행 */
+
+/* =========================================================
+   시 실행
+========================================================= */
+
 if (poemEl && stageEl) {
+
   splitTextIntoChars(poemEl);
+
   bindWordClicks();
+
   bindGatherEffect();
+
   updateWorldState();
 
-  console.log("char 개수:", poemEl.querySelectorAll(".char").length);
+  console.log(
+    "char 개수:",
+    poemEl.querySelectorAll(".char").length
+  );
+
 } else {
-  console.error("poem 또는 stage를 찾을 수 없음");
+
+  console.error(
+    "poem 또는 stage를 찾을 수 없음"
+  );
 }
 
-/* 네비 */
-const navTrigger = document.getElementById("navTrigger");
-const infoImage = document.getElementById("infoImage");
 
-navTrigger.addEventListener("click", (e) => {
-  e.stopPropagation();
-  infoImage.classList.toggle("show");
-});
+/* =========================================================
+   네비게이션
+========================================================= */
 
-infoImage.addEventListener("click", (e) => {
-  e.stopPropagation();
-});
+const navTrigger =
+  document.getElementById("navTrigger");
 
-document.addEventListener("click", () => {
-  infoImage.classList.remove("show");
-});
+const infoImage =
+  document.getElementById("infoImage");
+
+
+if (navTrigger && infoImage) {
+
+  navTrigger.addEventListener(
+    "click",
+    (e) => {
+
+      e.stopPropagation();
+
+      infoImage.classList.toggle(
+        "show"
+      );
+
+    }
+  );
+
+
+  infoImage.addEventListener(
+    "click",
+    (e) => {
+
+      e.stopPropagation();
+
+    }
+  );
+
+
+  document.addEventListener(
+    "click",
+    () => {
+
+      infoImage.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
