@@ -664,3 +664,21 @@ if (navTrigger && infoImage) {
   );
 
 }
+
+const camera = document.getElementById("camera");
+
+async function startCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+        });
+
+        camera.srcObject = stream;
+
+    } catch (error) {
+        console.error("카메라를 사용할 수 없습니다:", error);
+    }
+}
+
+startCamera();
