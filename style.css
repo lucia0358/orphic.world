@@ -321,6 +321,20 @@ body {
   }
 }
 
+#camera-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 300px;
+    z-index: 1000;
+}
+
+#camera {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
 /* ===== 모바일 ===== */
 @media (max-width: 700px) {
   .stage {
