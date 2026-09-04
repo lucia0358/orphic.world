@@ -334,20 +334,24 @@ body {
     z-index: 1000;
 
     cursor: grab;
-    user-select: none;
-}
+    user-select: none;}
 
 #camera-container:active {
-    cursor: grabbing;
-}
+    cursor: grabbing;}
 
 #camera {
     width: 100%;
     display: block;
 
     /* 좌우 반전 고정 */
-    transform: scaleX(-1);
-}
+    transform: scaleX(-1);}
+
+#mic-status {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 99999;
+    font-size: 14px;}
 
 /* ===== 모바일 ===== */
 @media (max-width: 700px) {
