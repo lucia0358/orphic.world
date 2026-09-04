@@ -682,3 +682,29 @@ async function startCamera() {
 }
 
 startCamera();
+
+const cameraContainer = document.getElementById("camera-container");
+
+let isDragging = false;
+let offsetX = 0;
+let offsetY = 0;
+
+cameraContainer.addEventListener("mousedown", (e) => {
+    isDragging = true;
+
+    const rect = cameraContainer.getBoundingClientRect();
+
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+});
+
+document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+
+    cameraContainer.style.left = `${e.clientX - offsetX}px`;
+    cameraContainer.style.top = `${e.clientY - offsetY}px`;
+});
+
+document.addEventListener("mouseup", () => {
+    isDragging = false;
+});
