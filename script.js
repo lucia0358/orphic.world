@@ -546,3 +546,22 @@ document.addEventListener("mousemove", (e) => {
 
 document.addEventListener("mouseup", () => {
     isDragging = false; });
+
+const micStatus = document.getElementById("mic-status");
+
+async function startMicrophone() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: false });
+
+        micStatus.textContent = "마이크 연결됨";
+
+        console.log("마이크 연결 성공");
+
+    } catch (error) {
+        micStatus.textContent = "마이크를 사용할 수 없습니다.";
+        console.error("마이크 오류:", error); }
+}
+
+startMicrophone();
