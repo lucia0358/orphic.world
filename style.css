@@ -323,16 +323,30 @@ body {
 
 #camera-container {
     position: fixed;
+
+    /* 초기 위치 */
     top: 20px;
-    right: 20px;
-    width: 300px;
+    left: 20px;
+
+    /* 크기 */
+    width: 250px;
+
     z-index: 1000;
+
+    cursor: grab;
+    user-select: none;
+}
+
+#camera-container:active {
+    cursor: grabbing;
 }
 
 #camera {
     width: 100%;
-    height: auto;
     display: block;
+
+    /* 좌우 반전 고정 */
+    transform: scaleX(-1);
 }
 
 /* ===== 모바일 ===== */
